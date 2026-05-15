@@ -1,0 +1,5 @@
+2026-05-15T13:28:21Z [ALLOW] claude mcp list 2>&1 | head -50
+2026-05-15T13:29:25Z [ALLOW] claude mcp add --scope user chrome-devtools -- npx -y chrome-devtools-mcp@latest 2>&1
+2026-05-15T13:29:26Z [ALLOW] claude mcp add --scope user context7 -- npx -y @upstash/context7-mcp 2>&1
+2026-05-15T13:29:26Z [ALLOW] claude mcp add --scope user postgres -- npx -y @modelcontextprotocol/server-postgres postgresql://localhost/postgres 2>&1
+2026-05-15T13:29:29Z [ALLOW] claude mcp list 2>&1

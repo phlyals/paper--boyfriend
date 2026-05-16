@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#fff0f4"/>
+  <circle cx="450" cy="420" r="155" fill="#f4c7b7"/>
+  <path d="M300 400c20-145 275-155 318-12-115-60-215-45-318 12z" fill="#2d2a33"/>
+  <circle cx="390" cy="432" r="14" fill="#20202a"/>
+  <circle cx="510" cy="432" r="14" fill="#20202a"/>
+  <path d="M390 505c42 38 78 38 120 0" stroke="#bd526c" stroke-width="13" fill="none" stroke-linecap="round"/>
+  <path d="M245 1180c35-278 375-278 410 0z" fill="#d96c86"/>
+  <text x="450" y="760" text-anchor="middle" font-size="68" font-family="Arial" fill="#b94f68">小祁</text>
+  <text x="450" y="835" text-anchor="middle" font-size="34" font-family="Arial" fill="#b94f68">俏皮黏人奶狗</text>
+</svg>

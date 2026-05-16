@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5f7fb;
+  --foreground: #18202f;
+  --panel: #ffffff;
+  --line: #dce3ee;
+  --accent: #2f8f83;
+  --accent-strong: #176c63;
+  --muted: #667085;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.safe-page {
+  min-height: 100svh;
+}
+
+.phone-shell {
+  width: min(100%, 460px);
+  height: 100svh;
+  overflow: hidden;
+  margin: 0 auto;
+  background: #eef3f8;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+
+.tap {
+  transition: transform 140ms ease, opacity 140ms ease, background 140ms ease;
+}
+
+.tap:active {
+  transform: scale(0.98);
+}
+
+/* 聊天页专用暗色 shell（独立于 phone-shell，不影响 pick/login） */
+.chat-shell {
+  position: relative;
+  width: min(100%, 460px);
+  height: 100svh;
+  overflow: hidden;
+  margin: 0 auto;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(102, 126, 234, 0.22), transparent 45%),
+    radial-gradient(circle at 80% 90%, rgba(94, 234, 212, 0.16), transparent 45%),
+    linear-gradient(160deg, #0c0f15 0%, #050608 50%, #11141a 100%);
+  color: #f5f7fb;
+  border-left: 1px solid rgba(255, 255, 255, 0.06);
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* 粒子背景（chat-client 里渲染 N 个空 div 即可） */
+.chat-particle {
+  position: absolute;
+  bottom: -8px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  pointer-events: none;
+  animation: chat-particle-float linear infinite;
+  z-index: 0;
+}
+
+@keyframes chat-particle-float {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.85;
+  }
+  85% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translateY(-110svh) translateX(var(--drift, 0px));
+    opacity: 0;
+  }
+}
+
+/* "对方正在输入" 三点动画 */
+.typing-dots {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  height: 18px;
+  padding: 0 2px;
+}
+
+.typing-dots span {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  animation: typing-bounce 1.2s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-dots span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typing-bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* "正在发照片" 占位 */
+.image-placeholder {
+  margin-top: 8px;
+  width: 220px;
+  height: 280px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  animation: pulse-bg 1.6s ease-in-out infinite;
+}
+
+@keyframes pulse-bg {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.65;
+  }
+}

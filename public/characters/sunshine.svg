@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#d9f1ec"/>
+  <circle cx="450" cy="420" r="155" fill="#f3c8af"/>
+  <path d="M295 385c42-140 275-138 316 2-88-56-206-59-316-2z" fill="#28313d"/>
+  <path d="M250 1180c30-275 370-280 400 0z" fill="#2f8f83"/>
+  <circle cx="392" cy="430" r="12" fill="#202733"/>
+  <circle cx="508" cy="430" r="12" fill="#202733"/>
+  <path d="M392 500c38 28 78 28 116 0" stroke="#9a4f4a" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <text x="450" y="760" text-anchor="middle" font-size="68" font-family="Arial" fill="#176c63">阿川</text>
+  <text x="450" y="835" text-anchor="middle" font-size="34" font-family="Arial" fill="#176c63">阳光运动暖男</text>
+</svg>

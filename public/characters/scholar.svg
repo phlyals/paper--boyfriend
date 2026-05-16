@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#edf0f6"/>
+  <circle cx="450" cy="420" r="155" fill="#efd0bf"/>
+  <path d="M300 380c36-132 260-150 315 4-76-45-198-65-315-4z" fill="#1f2937"/>
+  <rect x="365" y="420" width="60" height="32" rx="14" fill="none" stroke="#56637a" stroke-width="8"/>
+  <rect x="475" y="420" width="60" height="32" rx="14" fill="none" stroke="#56637a" stroke-width="8"/>
+  <path d="M425 436h50" stroke="#56637a" stroke-width="8"/>
+  <path d="M270 1180c35-260 325-280 360 0z" fill="#56637a"/>
+  <text x="450" y="760" text-anchor="middle" font-size="68" font-family="Arial" fill="#344054">沈知</text>
+  <text x="450" y="835" text-anchor="middle" font-size="34" font-family="Arial" fill="#344054">清冷内敛学霸</text>
+</svg>

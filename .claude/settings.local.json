@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(claude mcp *)"
+      "Bash(claude mcp *)",
+      "mcp__context7__resolve-library-id",
+      "WebSearch",
+      "mcp__context7__query-docs",
+      "Bash(pnpm typecheck *)",
+      "Bash(pnpm add *)",
+      "Bash(git check-ignore *)",
+      "Bash(pnpm db:push)",
+      "Bash(pnpm dev *)"
     ]
   }
 }

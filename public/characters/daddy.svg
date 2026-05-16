@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="1200" viewBox="0 0 900 1200">
+  <rect width="900" height="1200" fill="#f1eee9"/>
+  <circle cx="450" cy="420" r="158" fill="#e8c2aa"/>
+  <path d="M295 385c45-120 255-145 320 8-100-40-215-48-320-8z" fill="#3a302b"/>
+  <path d="M360 500c55 42 125 42 180 0" stroke="#8a5147" stroke-width="12" fill="none" stroke-linecap="round"/>
+  <path d="M248 1180c35-285 370-285 405 0z" fill="#7d6652"/>
+  <rect x="330" y="650" width="240" height="82" rx="20" fill="#ffffff" opacity=".48"/>
+  <text x="450" y="760" text-anchor="middle" font-size="68" font-family="Arial" fill="#5b4738">陆屿</text>
+  <text x="450" y="835" text-anchor="middle" font-size="34" font-family="Arial" fill="#5b4738">成熟稳重年上</text>
+</svg>

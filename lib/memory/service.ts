@@ -62,8 +62,15 @@ class LocalMemoryService implements MemoryService {
   async extract(userId: string, messages: Message[], conversationId?: string): Promise<number> {
     if (messages.length === 0) return 0;
 
+    // 取已有记忆文本，传给 LLM 避免语义重复抽取。
+    const existingRows = await db.query.memory.findMany({
+      where: eq(memory.userId, userId),
+      columns: { text: true },
+    });
+    const existingTexts = existingRows.map((r) => r.text);
+
     const turns = messages.map((m) => ({ role: m.role, content: m.content }));
-    const facts = await extractFactsWithLLM(turns);
+    const facts = await extractFactsWithLLM(turns, existingTexts);
     if (facts.length === 0) return 0;
 
     let added = 0;

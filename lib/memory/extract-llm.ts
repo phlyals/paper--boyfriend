@@ -9,18 +9,27 @@ export type ExtractedFact = {
   importance: number; // 1-5
 };
 
-const SYSTEM_PROMPT = `你是一个对话摘要助手。任务：从一段"用户↔虚拟陪伴对象"的对话中，抽取关于【用户】本人的、值得长期记住的信息。
+function buildSystemPrompt(existingTexts: string[]): string {
+  const existingSection =
+    existingTexts.length > 0
+      ? `\n【已记住的内容（不要重复，语义相同的也不要重复添加）】\n${existingTexts.map((t) => `- ${t}`).join("\n")}\n`
+      : "";
+
+  return `你是一个对话摘要助手。任务：从一段用户与虚拟陪伴对象的对话中，抽取关于【用户】本人的、值得长期记住的信息。
 
 输出严格 JSON，不要包含任何 markdown / 解释 / 多余文字：
 { "facts": [ { "text": string, "category": "fact"|"preference"|"emotion"|"recent_status"|"relation", "importance": 1-5 } ] }
 
 规则：
-- text 一律用第二人称（以"你..."开头），方便后续直接拼回 system prompt。例：「你下周三过生日」「你最近在准备期中作业」。
+- text 一律用第二人称（以"你..."开头）。例：「你下周三过生日」「你最近在准备期中作业」。
 - 只抽关于用户的信息；虚拟陪伴对象自己的言行不要记。
 - 一次性闲聊（"今天天气真好"）不要记。
-- 情绪/近况尽量具体，例："最近加班严重、老板换了" 优于 "工作不顺"。
+- 情绪/近况尽量具体："最近加班严重、老板换了" 优于 "工作不顺"。
 - 重要程度：1=顺嘴提到的小事；3=会反复提的近况/偏好；5=关键人物/纪念日/重要决定。
-- 没有可记的就返回 { "facts": [] }。`;
+- 【严禁】涉及性、暴力、政治敏感、自伤等违规内容，一律不记，直接跳过。
+- 没有可记的就返回 { "facts": [] }。
+${existingSection}`;
+}
 
 const VALID_CATEGORIES = new Set<MemoryCategory>([
   "fact",
@@ -30,15 +39,19 @@ const VALID_CATEGORIES = new Set<MemoryCategory>([
   "relation",
 ]);
 
-export async function extractFactsWithLLM(turns: ChatTurn[]): Promise<ExtractedFact[]> {
+export async function extractFactsWithLLM(
+  turns: ChatTurn[],
+  existingTexts: string[] = [],
+): Promise<ExtractedFact[]> {
   if (turns.length === 0) return [];
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) return [];
 
+  // 只传用户消息给 LLM，避免 assistant 的拒绝话术（里面可能复述了违规词）影响抽取。
   const dialogue = turns
-    .filter((t) => t.role !== "system")
-    .map((t) => `${t.role === "user" ? "用户" : "陪伴对象"}：${t.content}`)
+    .filter((t) => t.role === "user")
+    .map((t) => `用户：${t.content}`)
     .join("\n");
 
   try {
@@ -56,8 +69,8 @@ export async function extractFactsWithLLM(turns: ChatTurn[]): Promise<ExtractedF
         max_tokens: 600,
         response_format: { type: "json_object" },
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
-          { role: "user", content: `以下是对话：\n${dialogue}` },
+          { role: "system", content: buildSystemPrompt(existingTexts) },
+          { role: "user", content: `以下是对话（只含用户消息）：\n${dialogue}` },
         ],
       }),
     });

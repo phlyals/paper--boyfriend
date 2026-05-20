@@ -65,3 +65,9 @@
 2026-05-20T16:38:06Z [ALLOW] until grep -qE \
 2026-05-20T16:38:26Z [ALLOW] open http://localhost:3000/register
 2026-05-20T17:12:43Z [ALLOW] pnpm typecheck 2>&1 | tail -8
+2026-05-20T17:47:38Z [ALLOW] pnpm add resend 2>&1 | tail -6
+2026-05-20T17:48:38Z [ALLOW] pnpm typecheck 2>&1 | tail -8
+2026-05-20T17:50:36Z [ALLOW] pnpm typecheck 2>&1 | tail -10
+2026-05-20T17:52:12Z [ALLOW] pnpm add @react-email/components 2>&1 | tail -6
+2026-05-20T17:52:40Z [ALLOW] mkdir -p emails
+2026-05-20T17:53:54Z [ALLOW] pnpm typecheck 2>&1 | tail -10

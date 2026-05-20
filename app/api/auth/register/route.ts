@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/server";
+import { sendWelcomeEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -44,6 +45,18 @@ export async function POST(request: NextRequest) {
     },
     asResponse: true,
   });
+
+  // 注册成功后发欢迎邮件（clone 读取用户数据，不消费原 Response 的 body）
+  if (signUpResponse.ok) {
+    try {
+      const userData = await signUpResponse.clone().json();
+      const userName: string = userData?.user?.name ?? email.split("@")[0] ?? "新用户";
+      await sendWelcomeEmail(email, userName);
+    } catch (error) {
+      console.error("[register] 欢迎邮件发送失败：", error);
+      // 失败不影响注册流程，继续正常返回
+    }
+  }
 
   return signUpResponse;
 }

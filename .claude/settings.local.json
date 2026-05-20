@@ -9,7 +9,12 @@
       "Bash(pnpm add *)",
       "Bash(git check-ignore *)",
       "Bash(pnpm db:push)",
-      "Bash(pnpm dev *)"
+      "Bash(pnpm dev *)",
+      "mcp__postgres__query",
+      "Bash(node --env-file=.env.local --input-type=module)",
+      "Bash(lsof -ti:3000)",
+      "Bash(open http://localhost:3000)",
+      "Bash(xargs kill -9)"
     ]
   }
 }

@@ -2,36 +2,46 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth/client";
+import { Turnstile } from "@marsidev/react-turnstile";
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState("");
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
-    setLoading(true);
+
     const data = new FormData(event.currentTarget);
     const email = String(data.get("email") ?? "");
     const password = String(data.get("password") ?? "");
-    const result =
-      mode === "register"
-        ? await authClient.signUp.email({
-            email,
-            password,
-            name: email.split("@")[0] || "新用户",
-          })
-        : await authClient.signIn.email({
-            email,
-            password,
-          });
-    setLoading(false);
-    if (result.error) {
-      setError(result.error.message ?? "操作失败");
+
+    // 配了 Turnstile 且 token 未就绪，先拦截
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setError("请先完成人机验证");
       return;
     }
+
+    setLoading(true);
+
+    const endpoint = mode === "register" ? "/api/auth/register" : "/api/auth/login";
+    const res = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ email, password, turnstileToken }),
+    });
+    const result = await res.json().catch(() => ({}));
+    setLoading(false);
+    if (!res.ok) {
+      setError(result.error ?? (mode === "register" ? "注册失败，请重试" : "登录失败，请重试"));
+      return;
+    }
+
     router.push("/pick");
     router.refresh();
   }
@@ -61,10 +71,23 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
           required
         />
       </label>
+
+      {/* 配了 site key 时登录/注册都显示 Turnstile */}
+      {TURNSTILE_SITE_KEY ? (
+        <Turnstile
+          siteKey={TURNSTILE_SITE_KEY}
+          onSuccess={(token) => setTurnstileToken(token)}
+          onExpire={() => setTurnstileToken("")}
+          onError={() => setTurnstileToken("")}
+          options={{ theme: "dark" }}
+        />
+      ) : null}
+
       {error ? <p className="text-sm text-red-400">{error}</p> : null}
+
       <button
         className="tap w-full rounded-md bg-[#2f8f83] px-4 py-2.5 font-medium text-white shadow-lg shadow-[#2f8f83]/25 hover:bg-[#3aa89b] disabled:opacity-60"
-        disabled={loading}
+        disabled={loading || (!!TURNSTILE_SITE_KEY && !turnstileToken)}
       >
         {loading ? "处理中..." : mode === "login" ? "登录" : "注册并继续"}
       </button>

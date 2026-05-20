@@ -59,3 +59,9 @@
 2026-05-19T09:04:02Z [ALLOW] git log --oneline -5 && echo \
 2026-05-19T09:04:22Z [ALLOW] git fetch paper-boyfirend 2>&1 && git log --oneline paper-boyfirend/main | head -5
 2026-05-19T09:06:12Z [ALLOW] git push paper-boyfirend main --force 2>&1
+2026-05-20T16:09:03Z [ALLOW] pnpm add @marsidev/react-turnstile 2>&1 | tail -6
+2026-05-20T16:12:13Z [ALLOW] pnpm typecheck 2>&1 | tail -15
+2026-05-20T16:37:43Z [ALLOW] pnpm dev 2>&1
+2026-05-20T16:38:06Z [ALLOW] until grep -qE \
+2026-05-20T16:38:26Z [ALLOW] open http://localhost:3000/register
+2026-05-20T17:12:43Z [ALLOW] pnpm typecheck 2>&1 | tail -8

@@ -1,5 +1,8 @@
 import { NextRequest } from "next/server";
+import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth/server";
+import { db } from "@/lib/db/client";
+import { user } from "@/lib/db/schema";
 
 export const runtime = "nodejs";
 
@@ -40,6 +43,14 @@ export async function POST(request: NextRequest) {
     body: { email, password },
     asResponse: true,
   });
+
+  // 登录成功后更新 lastLoginAt（失败不影响登录流程）
+  if (signInResponse.ok) {
+    db.update(user)
+      .set({ lastLoginAt: new Date() })
+      .where(eq(user.email, email))
+      .catch((err) => console.error("[login] lastLoginAt update failed:", err));
+  }
 
   return signInResponse;
 }

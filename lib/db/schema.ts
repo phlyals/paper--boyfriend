@@ -19,6 +19,9 @@ export const user = pgTable("user", {
   image: text("image"),
   createdAt: timestamp("created_at", { mode: "date" }).notNull(),
   updatedAt: timestamp("updated_at", { mode: "date" }).notNull(),
+  // 业务扩展字段：最后登录时间 / 召回邮件发送时间
+  lastLoginAt: timestamp("last_login_at", { mode: "date" }).notNull().defaultNow(),
+  recallSentAt: timestamp("recall_sent_at", { mode: "date" }),
 });
 
 export const session = pgTable(

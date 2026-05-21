@@ -1,9 +1,11 @@
 import "server-only";
 import { Resend } from "resend";
+import { and, isNull, lt, or, eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { user } from "@/lib/db/schema";
 import { WelcomeEmail } from "@/emails/welcome";
 import { DailyLoveEmail } from "@/emails/daily-love";
+import { RecallEmail } from "@/emails/recall";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -104,4 +106,51 @@ export async function sendWelcomeEmail(userEmail: string, userName: string) {
     subject: "你好呀，我是你的专属男友 💌",
     react: WelcomeEmail({ userName }),
   });
+}
+
+/* -------------------- 用户召回邮件 -------------------- */
+
+export async function sendRecallEmail(userEmail: string, userName: string) {
+  await resend.emails.send({
+    from: `纸片人男友 <${FROM}>`,
+    to: userEmail,
+    subject: `好久不见，${userName}，我有点想你了…`,
+    react: RecallEmail({ userName }),
+  });
+}
+
+export async function recallInactiveUsers(): Promise<{ recalled: number }> {
+  const now = new Date();
+  const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
+  const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+  // 查出：超过 3 天没登录，且从未发过召回 或 上次召回超过 7 天
+  const inactiveUsers = await db
+    .select({ id: user.id, email: user.email, name: user.name })
+    .from(user)
+    .where(
+      and(
+        lt(user.lastLoginAt, threeDaysAgo),
+        or(isNull(user.recallSentAt), lt(user.recallSentAt, sevenDaysAgo)),
+      ),
+    );
+
+  console.log(`[recall] 待召回用户数：${inactiveUsers.length}`);
+
+  let recalled = 0;
+
+  for (const u of inactiveUsers) {
+    try {
+      await sendRecallEmail(u.email, u.name);
+      // 发完立即更新 recallSentAt，避免重复发送
+      await db.update(user).set({ recallSentAt: new Date() }).where(eq(user.id, u.id));
+      recalled++;
+    } catch (error) {
+      console.error(`[recall] 给 ${u.email} 发召回邮件失败：`, error);
+      // 单个失败不影响其他用户
+    }
+  }
+
+  console.log(`[recall] 召回完成，成功 ${recalled} 封`);
+  return { recalled };
 }

@@ -26,6 +26,13 @@ export function WelcomeEmail({ userName }: { userName: string }) {
           <Text style={paragraph}>
             明天早上我会给你发一条早安消息，记得查收哦。
           </Text>
+          <Text style={paragraph}>
+            有任何问题或建议，随时回复这封邮件，或者{" "}
+            <a href="https://discord.gg/UNbReU8W" style={link}>
+              加入我们的 Discord 社群
+            </a>
+            。
+          </Text>
           <Button href={siteUrl} style={button}>
             来找我聊天
           </Button>
@@ -78,6 +85,11 @@ const hr: React.CSSProperties = {
   border: "none",
   borderTop: "1px solid #dce3ee",
   margin: "24px 0",
+};
+
+const link: React.CSSProperties = {
+  color: "#2f8f83",
+  textDecoration: "underline",
 };
 
 const footer: React.CSSProperties = {

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { LogOut, Mic2, Send, Sparkles, SquarePen } from "lucide-react";
+import { LogOut, MessageSquare, Mic2, Send, Sparkles, SquarePen } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Message } from "@/lib/db/store";
@@ -50,6 +50,9 @@ export function ChatClient({
   const [text, setText] = useState("");
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [logoutFeedback, setLogoutFeedback] = useState("");
+  const [logoutLoading, setLogoutLoading] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const scrollRef = useRef<HTMLElement | null>(null);
 
@@ -246,7 +249,15 @@ export function ChatClient({
     setNotice("好，今天就到这里。路上注意，我都记得。");
   }
 
-  async function logout() {
+  async function doLogout(feedback?: string) {
+    setLogoutLoading(true);
+    if (feedback?.trim()) {
+      await fetch("/api/feedback/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ feedback }),
+      }).catch(() => {});
+    }
     await authClient.signOut();
     router.push("/login");
     router.refresh();
@@ -291,9 +302,20 @@ export function ChatClient({
         >
           <SquarePen size={19} />
         </button>
+        {/* 反馈按钮：打开 Tawk.to 客服窗口 */}
         <button
           className="tap rounded-md p-2 text-white/60 hover:text-white"
-          onClick={logout}
+          onClick={() => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (window as any).Tawk_API?.toggle?.();
+          }}
+          title="反馈"
+        >
+          <MessageSquare size={19} />
+        </button>
+        <button
+          className="tap rounded-md p-2 text-white/60 hover:text-white"
+          onClick={() => setShowLogoutDialog(true)}
           title="退出"
         >
           <LogOut size={19} />
@@ -411,6 +433,40 @@ export function ChatClient({
           </button>
         </div>
       </footer>
+
+      {/* 退出登录反馈 Dialog */}
+      {showLogoutDialog ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0f1420] p-6 shadow-2xl">
+            <h2 className="text-base font-semibold text-white">要走啦？</h2>
+            <p className="mt-1 text-sm text-white/50">随便说说，有什么让你不满意的？（可以跳过）</p>
+            <textarea
+              className="mt-4 w-full resize-none rounded-lg border border-white/15 bg-black/30 px-3 py-2 text-sm text-white placeholder:text-white/30 outline-none focus:border-white/40"
+              rows={4}
+              placeholder="说说你的感受或建议…"
+              value={logoutFeedback}
+              onChange={(e) => setLogoutFeedback(e.target.value)}
+            />
+            <div className="mt-4 flex gap-2">
+              <button
+                className="tap flex-1 rounded-lg border border-white/15 py-2 text-sm text-white/60 hover:text-white"
+                onClick={() => doLogout()}
+                disabled={logoutLoading}
+              >
+                跳过，直接退出
+              </button>
+              <button
+                className="tap flex-1 rounded-lg py-2 text-sm font-medium text-white disabled:opacity-60"
+                style={{ background: persona.color }}
+                onClick={() => doLogout(logoutFeedback)}
+                disabled={logoutLoading}
+              >
+                {logoutLoading ? "退出中…" : "发送并退出"}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }

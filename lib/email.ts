@@ -6,6 +6,7 @@ import { user } from "@/lib/db/schema";
 import { WelcomeEmail } from "@/emails/welcome";
 import { DailyLoveEmail } from "@/emails/daily-love";
 import { RecallEmail } from "@/emails/recall";
+import { LogoutFeedbackEmail } from "@/emails/logout-feedback";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -153,4 +154,20 @@ export async function recallInactiveUsers(): Promise<{ recalled: number }> {
 
   console.log(`[recall] 召回完成，成功 ${recalled} 封`);
   return { recalled };
+}
+
+/* -------------------- 退出登录反馈通知（发给管理员） -------------------- */
+
+export async function sendLogoutFeedback(
+  userName: string,
+  userEmail: string,
+  feedback: string,
+) {
+  const adminEmail = process.env.ADMIN_EMAIL ?? FROM;
+  await resend.emails.send({
+    from: `纸片人男友 <${FROM}>`,
+    to: adminEmail,
+    subject: `用户 ${userName} 退出并留下了反馈`,
+    react: LogoutFeedbackEmail({ userName, userEmail, feedback }),
+  });
 }

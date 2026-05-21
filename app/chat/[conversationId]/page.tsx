@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { after } from "next/server";
+import Script from "next/script";
 import { requireUser } from "@/lib/auth/session";
 import { getConversationBundle, updateConversationMemoryExtractedAt } from "@/lib/db/store";
 import { getMemoryService } from "@/lib/memory/service";
@@ -34,17 +35,30 @@ export default async function ChatPage({ params }: { params: Promise<{ conversat
   }
 
   return (
-    <ChatClient
-      conversationId={conversationId}
-      initialMessages={bundle.messages}
-      persona={{
-        slug: bundle.persona.slug,
-        displayName: bundle.persona.displayName,
-        shortName: bundle.persona.shortName,
-        color: bundle.persona.color,
-        baseImageUrl: bundle.userCharacter.baseImageUrl,
-        quotaLine: bundle.persona.quotaLine,
-      }}
-    />
+    <>
+      <ChatClient
+        conversationId={conversationId}
+        initialMessages={bundle.messages}
+        persona={{
+          slug: bundle.persona.slug,
+          displayName: bundle.persona.displayName,
+          shortName: bundle.persona.shortName,
+          color: bundle.persona.color,
+          baseImageUrl: bundle.userCharacter.baseImageUrl,
+          quotaLine: bundle.persona.quotaLine,
+        }}
+      />
+      <Script id="tawk-to" strategy="afterInteractive">{`
+        var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+        (function(){
+          var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+          s1.async=true;
+          s1.src='https://embed.tawk.to/6a0f348f2515ce1c382f0a08/1jp5makab';
+          s1.charset='UTF-8';
+          s1.setAttribute('crossorigin','*');
+          s0.parentNode.insertBefore(s1,s0);
+        })();
+      `}</Script>
+    </>
   );
 }
